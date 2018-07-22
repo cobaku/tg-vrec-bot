@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/cobaku/tg-vrec-bot/src/telegram"
+	"github.com/cobaku/tg-vrec-bot/src/telegram/message"
 	"log"
 )
 
@@ -21,13 +22,13 @@ func main() {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	updates, err := bot.GetUpdatesChan(u)
+	channel, err := bot.GetUpdatesChan(u)
 
-	for update := range updates {
-		if update.Message == nil {
-			continue
-		}
+	if err != nil {
+		log.Panic(err)
+	}
 
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+	for outgoingMessage := range message.NewTelegramMessageHandler(channel).Run() {
+		bot.Send(outgoingMessage)
 	}
 }
