@@ -3,11 +3,13 @@ package main
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/cobaku/tg-vrec-bot/src/telegram"
-	"github.com/cobaku/tg-vrec-bot/src/telegram/message"
+	"github.com/cobaku/tg-vrec-bot/src/message"
 	"log"
+	"github.com/cobaku/tg-vrec-bot/src/config"
 )
 
 func main() {
+	config.InitConfig()
 
 	bot, err := telegram.InitBot()
 
@@ -28,7 +30,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	for outgoingMessage := range message.NewTelegramMessageHandler(channel).Run() {
+	for outgoingMessage := range message.NewTelegramMessageHandler(channel, bot.GetFileDirectURL).Run() {
 		bot.Send(outgoingMessage)
 	}
 }

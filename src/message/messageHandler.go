@@ -9,7 +9,10 @@ type TelegramMessageHandler struct {
 	outputChannel chan tgbotapi.Chattable
 }
 
-func NewTelegramMessageHandler(inputChannel tgbotapi.UpdatesChannel) *TelegramMessageHandler {
+var voiceMessageHandler VoiceMessageHandler
+
+func NewTelegramMessageHandler(inputChannel tgbotapi.UpdatesChannel, getFileUrl func(fileId string) (string, error)) *TelegramMessageHandler {
+	voiceMessageHandler = *NewVoiceMessageHandler(getFileUrl)
 	return &TelegramMessageHandler{inputChannel: inputChannel, outputChannel: make(chan tgbotapi.Chattable, 50)}
 }
 
@@ -32,16 +35,17 @@ func (handler *TelegramMessageHandler) handleMessage(update tgbotapi.Update) {
 	}
 
 	if update.Message.Text != "" {
-		handler.handleTextMessage(update)
+		go handler.handleTextMessage(update)
 	}
 
 	if update.Message.Voice != nil {
-		handler.handleVoiceMessage(update)
+		go handler.handleVoiceMessage(update)
 	}
 }
 
 func (handler *TelegramMessageHandler) handleVoiceMessage(message tgbotapi.Update) {
-	msg := tgbotapi.NewMessage(message.Message.Chat.ID, "Hi")
+	voiceMessageText := voiceMessageHandler.Handle(message)
+	msg := tgbotapi.NewMessage(message.Message.Chat.ID, voiceMessageText)
 	msg.ReplyToMessageID = message.Message.MessageID
 	handler.outputChannel <- msg
 }
