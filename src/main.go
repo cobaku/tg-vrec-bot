@@ -17,7 +17,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	bot.Debug = true
+	if config.CurrentConfig.Debug {
+		bot.Debug = true
+	}
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 

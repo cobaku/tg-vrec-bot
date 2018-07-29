@@ -1,31 +1,29 @@
 package config
 
-import "flag"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
+)
 
 type Config struct {
-	IsProxyRequired bool
-	Token           string
-	ProxyUrl        string
-	ProxyUsername   string
-	ProxyPassword   string
+	IsProxyRequired bool   `json:"socks5"`
+	Token           string `json:"token"`
+	ProxyUrl        string `json:"proxy"`
+	ProxyUsername   string `json:"user"`
+	ProxyPassword   string `json:"password"`
+	SpeechKitApiKey string `json:"speechKitApiKey"`
+	Debug           bool   `json:"debug"`
 }
 
 var CurrentConfig Config
 
 func InitConfig() {
-	proxyUrl := flag.String("proxy", "", "provide proxy URL: IP:PORT")
-	proxyUsername := flag.String("user", "", "proxy user")
-	proxyPassword := flag.String("password", "", "proxy password")
-	isProxyRequired := flag.Bool("socks5", false, "is socks5 proxy required")
-	token := flag.String("token", "", "telegram bot access token")
+	file, err := ioutil.ReadFile("src/config/config.json")
 
-	flag.Parse()
-
-	CurrentConfig = Config{
-		IsProxyRequired: *isProxyRequired,
-		Token:           *token,
-		ProxyUrl:        *proxyUrl,
-		ProxyUsername:   *proxyUsername,
-		ProxyPassword:   *proxyPassword,
+	if err != nil {
+		log.Panic(err)
 	}
+
+	json.Unmarshal([]byte(file), &CurrentConfig)
 }

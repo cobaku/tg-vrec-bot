@@ -34,10 +34,6 @@ func (handler *TelegramMessageHandler) handleMessage(update tgbotapi.Update) {
 		return
 	}
 
-	if update.Message.Text != "" {
-		go handler.handleTextMessage(update)
-	}
-
 	if update.Message.Voice != nil {
 		go handler.handleVoiceMessage(update)
 	}
@@ -46,12 +42,6 @@ func (handler *TelegramMessageHandler) handleMessage(update tgbotapi.Update) {
 func (handler *TelegramMessageHandler) handleVoiceMessage(message tgbotapi.Update) {
 	voiceMessageText := voiceMessageHandler.Handle(message)
 	msg := tgbotapi.NewMessage(message.Message.Chat.ID, voiceMessageText)
-	msg.ReplyToMessageID = message.Message.MessageID
-	handler.outputChannel <- msg
-}
-
-func (handler *TelegramMessageHandler) handleTextMessage(message tgbotapi.Update) {
-	msg := tgbotapi.NewMessage(message.Message.Chat.ID, "К сожалению, пока не могу ничем помочь")
 	msg.ReplyToMessageID = message.Message.MessageID
 	handler.outputChannel <- msg
 }

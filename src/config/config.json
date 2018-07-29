@@ -1,0 +1,9 @@
+{
+  "proxy": "",
+  "user": "",
+  "password": "",
+  "socks5": false,
+  "token": "",
+  "speechKitApiKey": "",
+  "debug": true
+}

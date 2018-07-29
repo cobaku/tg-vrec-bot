@@ -8,6 +8,7 @@ import (
 	"os"
 	"fmt"
 	"io"
+	"io/ioutil"
 )
 
 func BuildClientWithProxy() *http.Client {
@@ -27,6 +28,40 @@ func BuildClientWithProxy() *http.Client {
 	httpTransport.Dial = dialer.Dial
 
 	return httpClient
+}
+
+func UploadFile(fileName string, url string, contentType string, isProxyRequired bool) ([]byte, error) {
+	file, err := os.OpenFile(fileName, os.O_RDONLY, 0666)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+
+	var httpClient *http.Client
+
+	if isProxyRequired {
+		httpClient = BuildClientWithProxy()
+	} else {
+		httpClient = &http.Client{}
+	}
+
+	resp, err := httpClient.Post(url, contentType, file)
+
+	defer resp.Body.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return b, nil
 }
 
 func DownloadFile(filePath string, url string) (err error) {
