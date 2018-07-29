@@ -2,13 +2,13 @@ package message
 
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/labstack/gommon/log"
 	"github.com/cobaku/tg-vrec-bot/src/utils"
 	"os/exec"
 	"strings"
 	"encoding/xml"
 	"github.com/cobaku/tg-vrec-bot/src/dto"
 	"github.com/cobaku/tg-vrec-bot/src/config"
+	"log"
 )
 
 type VoiceMessageHandler struct {
