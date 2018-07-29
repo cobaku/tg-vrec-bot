@@ -19,7 +19,7 @@ type Config struct {
 var CurrentConfig Config
 
 func InitConfig() {
-	file, err := ioutil.ReadFile("src/config/config.json")
+	file, err := ioutil.ReadFile("../src/config/config.json")
 
 	if err != nil {
 		log.Panic(err)
